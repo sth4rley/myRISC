@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------
--- Memory Access                                                                            --
+-- Write back                                                                               --
 --														                                    --
 -- myRISC												                                    --
 -- Prof. Max Santana  (2023)                                                                --
@@ -9,25 +9,25 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity memoryAccess is
+entity writeback is
   port(
-    address    : in std_logic_vector(31 downto 0);
-    memWrite   : in std_logic;
-    clk        : in std_logic;
-    writeData  : in std_logic_vector(31 downto 0);
-    memoryData : out std_logic_vector(31 downto 0)
+    memoryData : in std_logic_vector(31 downto 0);
+    result     : in std_logic_vector(31 downto 0);
+    memToReg   : in std_logic_vector (1 downto 0);
+    writeData  : out std_logic_vector(31 downto 0);
+    PcPlus4	   : in  std_logic_vector(31 downto 0)
   );
-end memoryAccess;
+end writeback;
 
-architecture behavior of memoryAccess is
+architecture behavior of writeback is
   signal wireRegB   	: std_logic_vector(31 downto 0);
   signal wireOper   	: std_logic_vector(2 downto 0);
 begin
-  DATAMEMORY: entity work.ram port map (
-    datain  => writeData,
-    address => address,   
-    clk     => clk,
-    write   => memWrite, -- write when 1, read when 0
-    dataout => memoryData
+  MUXWD: entity work.mux332 port map (
+    d0 => result,
+    d1 => memoryData,
+    d2 => PcPlus4,
+    s  => memToReg,
+    y  => writeData
   );
 end behavior;

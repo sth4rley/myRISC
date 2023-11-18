@@ -8,6 +8,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_unsigned.all;
 
 entity decode is
   port(
@@ -16,7 +18,7 @@ entity decode is
     PCplus4    : in std_logic_vector(31 downto 0);  -- next program counter (PC+4)
     inst       : in std_logic_vector(31 downto 0);  -- instruction
     writeData  : in std_logic_vector(31 downto 0);  -- write data
-    regDst     : in std_logic;                      -- control signal (regdst)
+    regDst     : in std_logic_vector(1 downto 0);   -- control signal (regdst)
     regWrite   : in std_logic;                      -- control signal (regwrite)
     opcode     : out std_logic_vector(5 downto 0);  -- opcode
     jumpAddr   : out std_logic_vector(31 downto 0); -- Jump Address
@@ -51,9 +53,10 @@ begin
     end if;
   end process EXTENDIMM;
   
-  MUXRT: entity work.mux25 port map (
+  MUXRT: entity work.mux35 port map (
     d0 => inst(20 downto 16), -- RT
     d1 => inst(15 downto 11), -- RD
+    d2 => std_logic_vector(to_unsigned(31,5)),
     s  => regDst,
     y  => wireWriteRegister
   );
